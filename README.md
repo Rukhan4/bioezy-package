@@ -2,11 +2,13 @@
 
 ### [PyPi](https://pypi.org/project/bioezy/#description)
 
+### [Github](https://github.com/Rukhan4/bioezy-package)
+
+
 ## Installation: `pip install bioezy`
 
 ## Usage: `from bioez import bzy`
 
-### [Github](https://github.com/Rukhan4/bioezy-package)
 
 ## Package details
 
