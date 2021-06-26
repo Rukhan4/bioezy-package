@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: bioez-test
+Version: 0.0.1
+Summary: Contains several bioinformatics scripts automating base level genomics analysis tasks
+Home-page: https://github.com/Rukhan4/bioez
+Author: Surur Khan
+Author-email: surur.rkhan@gmail.com
+License: UNKNOWN
+Project-URL: Documentation, https://github.com/bioez/docs
+Project-URL: Bug Tracker, https://github.com/bioez/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Bioez Package
+`pip install bioez`
+
+[bioez PyPi hostage](promise)
+
+## Package details
+
+Contains several low level bioinformatics scripts to automate analysis tasks. It mainly runs on genomic and Dna data. 
+These are stored in methods which are fully documented. 
+
+Package Dependancies:
+
+Random (built in)
+Math (built in)
+

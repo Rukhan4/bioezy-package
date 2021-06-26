@@ -1,0 +1,34 @@
+Metadata-Version: 2.1
+Name: bioezy
+Version: 0.0.3
+Summary: Contains several bioinformatics scripts automating base level genomics analysis tasks
+Home-page: https://github.com/Rukhan4/bioezpkg
+Author: Surur Khan
+Author-email: surur.rkhan@gmail.com
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/Rukhan4/bioezpkg/issues.md
+Project-URL: Documentation, https://github.com/Rukhan4/bioezpkg/documentation.md
+Description: # Bioez Package
+        
+        ## Installation: `pip install bioezy`
+        
+        ## Usage: `from bioez import bzy`
+        
+        [Github](https://github.com/Rukhan4/bioezpkg)
+        
+        ## Package details
+        
+        Contains several low level bioinformatics scripts to automate analysis tasks. It mainly runs on genomic and Dna data. 
+        These are stored in methods which are fully documented. 
+        
+        Package Dependancies:
+        
+        Random (built in)
+        
+        Math (built in)
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

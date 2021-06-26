@@ -1,0 +1,10 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+src/bioez/__init__.py
+src/bioez/bz.py
+src/bioez_test.egg-info/PKG-INFO
+src/bioez_test.egg-info/SOURCES.txt
+src/bioez_test.egg-info/dependency_links.txt
+src/bioez_test.egg-info/top_level.txt
