@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: bioezy
-Version: 0.0.3
+Version: 0.0.4
 Summary: Contains several bioinformatics scripts automating base level genomics analysis tasks
 Home-page: https://github.com/Rukhan4/bioezpkg
 Author: Surur Khan
@@ -14,7 +14,7 @@ Description: # Bioez Package
         
         ## Usage: `from bioez import bzy`
         
-        [Github](https://github.com/Rukhan4/bioezpkg)
+        [Github](https://github.com/Rukhan4/bioezy-package)
         
         ## Package details
         

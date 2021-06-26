@@ -4,14 +4,15 @@
 
 ## Usage: `from bioez import bzy`
 
-[Github](https://github.com/Rukhan4/bioezypkg)
+[Github](https://github.com/Rukhan4/bioezy-package)
 
 ## Package details
 
-Contains several low level bioinformatics scripts to automate analysis tasks. It mainly runs on genomic and Dna data. 
-These are stored in methods which are fully documented. 
+Contains several bioinformatics scripts automating base level genomics analysis tasks. Methods mainly runs on genomic and Dna data, 
+which are fully documented
 
-Package Dependancies:
+
+### Package Dependancies:
 
 Random (built in)
 
