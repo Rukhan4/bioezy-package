@@ -7,7 +7,7 @@
 
 ## Installation: `pip install bioezy`
 
-## Usage: `from bioez import bzy`
+## Usage: `from bioezy import bzy`
 
 
 ## Package details
@@ -16,3 +16,11 @@ Contains several bioinformatics scripts automating base level genomics analysis 
 which are fully documented
 
 
+<<<<<<< HEAD
+=======
+### Package Dependancies:
+
+Random (built in)
+
+Math (built in)
+>>>>>>> d39c721b9bcd18e36efa15a3db7843df7130cca6
