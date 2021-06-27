@@ -7,7 +7,7 @@
 
 ## Installation: `pip install bioezy`
 
-## Usage: `from bioez import bzy`
+## Usage: `from bioezy import bzy`
 
 
 ## Package details
