@@ -6,3 +6,7 @@ mccabe==0.6.1
 pylint==2.8.3
 toml==0.10.2
 wrapt==1.12.1
+Random (built in)
+Math (built in)
+Collections (built in)
+Itertools (built in)

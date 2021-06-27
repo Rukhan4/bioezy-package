@@ -16,8 +16,3 @@ Contains several bioinformatics scripts automating base level genomics analysis 
 which are fully documented
 
 
-### Package Dependancies:
-
-Random (built in)
-
-Math (built in)
