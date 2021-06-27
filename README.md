@@ -1,4 +1,4 @@
-# Bioez Package
+# Bioez Package v 0.0.3
 
 ### [PyPi](https://pypi.org/project/bioezy/#description)
 
