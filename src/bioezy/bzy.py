@@ -837,7 +837,7 @@ def mismatches_and_reverse_compliment(text, k, d):
 
 def neighbors(Pattern, d):
     """[Our idea for generating neighbors(Pattern, d) is as follows. If we remove the first symbol of Pattern
-        then we will obtain a (k − 1)-mer
+        then we will obtain a (k − 1)-mer sequence denoted SuffixNeighbors. Find all possible combinations for each base and each SuffixNeighbor
         k-neighbors of any k-mer is an easy way of generating all kmers.]
 
     Args:
