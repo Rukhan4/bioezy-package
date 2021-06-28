@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="bioezy",
-    version="0.0.4",
+    version="0.0.5",
     author="Surur Khan",
     author_email="surur.rkhan@gmail.com",
     description="Contains several bioinformatics scripts automating base level genomics analysis tasks",

@@ -1,5 +1,7 @@
 import random
 import math
+import itertools
+from collections import defaultdict
 
 
 def pattern_count(text, pattern):
@@ -487,7 +489,7 @@ def greedy_motif_with_pseudocounts(Dna, k, t):
         t ([int]): [total length parameter (range)]
 
     Returns:
-        [list]: [A collection of strings BestMotifs resulting from running GreedyMotifSearch(Dna, k, t) with
+        [list]: [A collection of strings BestMotifs resulting from running greedy_motif_search(Dna, k, t) with
                 pseudocounts. If at any step you find more than one Profile-most probable k-mer in a given string,
                 use the one occurring first.]
     """
@@ -548,7 +550,7 @@ def random_motifs(Dna, k, t):
     return RandomMotif
 
 
-def randomized_motif_search(Dna, k, t):
+def random_motif_search(Dna, k, t):
     """[starts by generating a collection of random motifs using the random_motifs function which we set as the best scoring collection of motifs. It continuously runs until motif score stops improving.]
 
     Dependancies: 
@@ -574,11 +576,11 @@ def randomized_motif_search(Dna, k, t):
             return BestMotifs
 
 
-def repeated_randomized_motif_search(Dna, k, t):
+def repeated_random_motif_search(Dna, k, t):
     """[finds best scoring motif]
 
     Dependancies:
-        uses randommotif, profile_with_pseudocounts,count_with_pseudocounts,score,consensus,count,motifs,Pr,randomized_motif_search
+        uses randommotif, profile_with_pseudocounts,count_with_pseudocounts,score,consensus,count,motifs,Pr,random_motif_search
 
     Args:
         Dna ([string]): [reference sequence to be searched]
@@ -591,7 +593,7 @@ def repeated_randomized_motif_search(Dna, k, t):
     Bestscore = float('inf')
     BestMotifs = []
     for i in range(len(Dna)):
-        Motifs = randomized_motif_search(Dna, k, t)
+        Motifs = random_motif_search(Dna, k, t)
         Currscore = score(Motifs)
         if Currscore < Bestscore:
             Bestscore = Currscore
@@ -657,7 +659,8 @@ def profile_generated_string(text, profile, k):
 
 
 def gibbs_sampler(Dna, k, t, N):
-    """[summary]
+    """[ discards a single kmer from the current set of motifs at each iteration and decides to either keep or replace one
+# continuously to generate a suboptimal solution particularly for different search problems with elusive motifs (local optimum)]
 
     Dependancies:
         randommotifs, count_with_pseudocounts,profile_with_pseudocounts,profilegeneratingstring,normalize,weighteddie, pr,score,consensus,count
@@ -686,3 +689,350 @@ def gibbs_sampler(Dna, k, t, N):
         if score(Motifs) < score(BestMotifs):
             BestMotifs = Motifs
     return BestMotifs
+
+# ------------------------------------------------------------------------------------------------------
+
+
+def list_to_string(mylist):
+    """[# A simple function to convert a list of values to a string of values with no separators
+]
+
+    Args:
+        s ([list]): [list of values]
+
+    Returns:
+        [string]: [joint values from list]
+    """
+    return ' '.join(str(word) for word in mylist)
+
+
+def find_clumps(genome, k, L, t):
+    """[ Returns all distinct k-mers forming (L, t)-clumps in Genome]
+
+    Dependancies:
+        pattern_count
+    Args:
+        genome ([string]): [genome / nucleotide sequence to be parsed]
+        k ([int]): [length of k-mer / DnaA box]
+        L ([int]): [length of ori]
+        t ([int]): [occurrence expected in genome - clump expected to be found at least 't' times]
+    """
+    # k is len of k-mer/DnaA box, L is length of genome, t is occurence
+    count = {}
+    for i in range(L):
+        pattern = genome[i:i+k]
+        if (pattern_count(genome, pattern) == t):
+            count[pattern] = pattern_count(genome, pattern)
+    print(" ".join(count.keys()))
+    return count
+
+
+def permute_motif_once(motif, alphabet={"A", "C", "G", "T"}):
+    """
+    Gets all strings within hamming distance 1 of motif and returns it as a
+    list.
+    """
+
+    return list(set(itertools.chain.from_iterable([[
+        motif[:pos] + nucleotide + motif[pos + 1:] for
+        nucleotide in alphabet] for
+        pos in range(len(motif))])))
+
+
+def permute_motif_distance_times(motif, d):
+    workingSet = {motif}
+    for _ in range(d):
+        workingSet = set(itertools.chain.from_iterable(map(permute_motif_once, workingSet)))
+    return list(workingSet)
+
+
+def freq_words_mismatch(Genome, k, d):
+    """[A most frequent k-mer with up to d mismatches in Text is
+        simply a string Pattern maximizing Countd(Text, Pattern) among all k-mersary]
+
+    Dependancies:
+        permute_motif_once, permute_motif_distance_times
+
+    Args:
+        Genome ([string]): [string to be parsed]
+        k ([int]): [determines length of kmer]
+        d ([int]): [mismatch allowance]
+
+    Returns:
+        [list]: [most frequent kmers]
+    """
+    aprox_frq_words = []
+    frequencies = defaultdict(lambda: 0)
+    # all existent kmers with d mismatches of current kmer in genome
+    for index in range(len(Genome) - k + 1):
+        curr_kmer_and_neighbors = permute_motif_distance_times(Genome[index: index + k], d)
+        for kmer in curr_kmer_and_neighbors:
+            frequencies[kmer] += 1
+
+    for kmer in frequencies:
+        if frequencies[kmer] == max(frequencies.values()):
+            aprox_frq_words.append(kmer)
+    return aprox_frq_words
+
+
+def pattern_matching_with_mismatch(text, pat, d):
+    count = 0
+    for i in range(0, len(text)):
+        p = text[i:i+len(pat)]
+        if len(p) != len(pat):
+            break
+        if hamming_distance(p, pat) <= d:
+            count = count+1
+    return count
+
+
+def pattern_to_number(pattern):
+    if len(pattern) == 0:
+        return
+    SymbolToNumber = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+    if len(pattern) == 1:
+        return SymbolToNumber[pattern]
+    n = len(pattern)
+    symbol = pattern[n-1]
+    prefix = pattern[:n-1]
+    return (4*pattern_to_number(prefix)+SymbolToNumber[symbol])
+
+
+def number_to_pattern(index, k):
+    NumberToSymbol = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
+    if k == 1:
+        return NumberToSymbol[index]
+    prefix_index = index//4
+    r = index % 4
+    symbol = NumberToSymbol[r]
+    return number_to_pattern(prefix_index, k-1)+symbol
+
+
+def mismatches_and_reverse_compliment(text, k, d):
+    """[account for both mismatches and reverse complements.
+        Recall that Patternrc refers to the reverse complement of Pattern.]
+
+    Dependancies:
+        pattern_to_number,number_to_pattern,pattern_matching,hamming_distance,reverse_compliment
+
+
+    Args:
+        text ([string]): [string to be parsed]
+        k ([int]): [determines length of kmer]
+        d ([int]): [mistmatch allowance]
+
+    Returns:
+        [dict]: [performs pattern matching accounting for both reverse compliments of regular and mismatches]
+    """
+    frequencyarray = {}
+    rev_text = reverse_compliment(text)
+    for i in range(0, 4**k):
+        frequencyarray[i] = 0
+    for i in frequencyarray:
+        count, r_count = 0, 0
+        count = pattern_matching_with_mismatch(text, number_to_pattern(i, k), d)
+        r_count = pattern_matching_with_mismatch(rev_text, number_to_pattern(i, k), d)
+        frequencyarray[i] = count+r_count
+    return frequencyarray
+
+
+def neighbors(Pattern, d):
+    """[Our idea for generating neighbors(Pattern, d) is as follows. If we remove the first symbol of Pattern
+        then we will obtain a (k − 1)-mer sequence denoted SuffixNeighbors. Find all possible combinations for each base and each SuffixNeighbor
+        k-neighbors of any k-mer is an easy way of generating all kmers.]
+
+    Args:
+        Pattern ([string]): [string to be parsed]
+        d ([int]): [mismatch allowance]
+
+    Returns:
+        [list]: [all suffixes in d-neighborhood]
+    """
+    if d == 0:
+        return Pattern
+    if len(Pattern) == 1:
+        return {"A", "C", "G", "T"}
+    Neighborhood = []
+    Suffixneighbors = neighbors(Pattern[1:], d)
+    for Text in Suffixneighbors:
+        if hamming_distance(Pattern[1:], Text) < d:
+            for x in {"A", "C", "G", "T"}:
+                Neighborhood.append(x + Text)
+        else:
+            Neighborhood.append(Pattern[0] + Text)
+    return Neighborhood
+
+#---------------------------------------------------------------------------------------
+
+def suffix(Pattern):
+    """ 
+    return every symbol in pattern except the first
+    """
+    if len(Pattern) == 1:
+        return ""
+    Sufx = Pattern[1:]
+    return Sufx
+
+
+def first_symbol(Pattern):
+    """ 
+    return first symbol of pattern
+    """ 
+    x = Pattern[0]
+    return x
+
+def motif_enumeration(Dna, k, d):
+    """[A kmer is a k,d motif if it appears in every string
+       from Dna with at most d mismatches]
+    
+    Dependancies:
+        neighbours,suffix,first_symbol,hamming_distance
+
+    Args:
+        Dna ([string]): [space separated string sequences of nucleotides]
+        k ([int]): [determines length of kmer]
+        d ([int]): [mismatch allowance]
+
+    Returns:
+        [string]: [Returns all (k,d)-motifs in Dna]
+    """
+    patterns = set()
+    n = len(Dna)
+    AllKmers = []
+    for j in range(n):
+        a = Dna[j]
+        kmers = []
+        n_1 = len(a)
+        for i in range(n_1 - k + 1):
+            kmers.append(a[i:i+k])
+        neigh = []
+        for i in range(len(kmers)):
+            l = UpdateNeighbours(kmers[i], d)
+            for val in l:
+                neigh.append(val)
+        AllKmers.append(neigh)
+    x1 = set(AllKmers[0])
+    x2 = set(AllKmers[1])
+    patterns = x1 and x2
+    for y in range(2, len(AllKmers)):
+        patterns = patterns and set(AllKmers[y])
+    patterns = list(patterns)
+    string = ""
+    for i in patterns:
+        string = string + i + " "
+    return string
+
+
+def median_string(Dna, k):
+    """[a fast algorithm for generating Motifs(Pattern,Dna), a collection of Motifs(Pattern,Dna) as a collection
+        of kmers that minimize d(Pattern,Motifs) where d is the hamming distance]
+        **NB: fails as long as a single sequence does not have the transcription factor binding sight.
+        Runtime: len(dna) * (k+ k**d) * len(dna) * k
+
+    Dependancies
+        neighbors, hamming_distance
+        
+    Args:
+        Dna ([string]): [space separated string sequences of nucleotides]
+        k ([int]): [determines length of kmer]
+
+    Returns
+        [string]: [kmer pattern minimizing d(Pattern,Dna) among all possible choices of kmer]
+    """
+
+    def get_distance(Pattern, Text):
+        n = len(Text)
+        k = len(Pattern)
+        min_distance = hamming_distance(Text[:k], Pattern)
+        for i in range(n - k + 1):
+            distance = hamming_distance(Text[i:i + k], Pattern)
+            if distance < min_distance:
+                min_distance = distance
+        return min_distance
+
+    def get_total_distance(Pattern, Dna):
+        total_distance = 0
+        for text in Dna:
+            distance = get_distance(Pattern, text)
+            total_distance += distance
+        return total_distance
+
+    min_pattern = first_symbol(Pattern)
+    min_total_distance = get_total_distance(min_pattern, Dna)
+    for pattern in Suffix(Pattern):
+        total_distance = get_total_distance(pattern, Dna)
+        if total_distance < min_total_distance:
+            min_pattern = pattern
+            min_total_distance = total_distance
+
+    return min_pattern
+
+
+def distance_between_pattern_and_string(Pattern, Dna):
+    """[the sum of distances between Pattern and each string in Dna = {Dna1, ..., Dnat}]
+
+    Dependancies:
+        hamming_distance
+    
+    Args:
+        Pattern ([string]): [k-mer pattern reference to be searched for in Dna]
+        Dna ([string]): [space separated string sequences of nucleotides]
+
+    Returns:
+        [int]: [the distance between Pattern and Dna - score]
+    """
+    k = len(Pattern)
+    d = 0
+    for text in Dna:
+        d_temp = float('Inf')
+        for i in range(len(text) - k + 1):
+            if d_temp > hamming_distance(Pattern, text[i:i+k]):
+                d_temp = hamming_distance(Pattern, text[i:i+k])
+        d += d_temp
+    return d
+
+def profile_most_probable_kmer_noPR(text, k, profile):
+    """[a kmer that was most likely to have been generated by profile among all kmers in text]
+
+    Dependancies:
+        probability_kmer
+
+    Args:
+        text ([string]): [string to be searched against]
+        k ([int]): [determines length of kmer]
+        profile ([dict]): [contains the probability of finding each nucleotide]
+
+    Returns:
+        [string]: [kmer that has the highest probability of being generated]
+    """
+    probability = []
+    for i in range(len(text)-k+1):
+        compute = 1
+        for j in range(k):
+            compute = compute*(profile[text[i+j]][j])
+        probability.append(compute)
+    idx = probability.index(max(probability))
+    return text[idx:idx+k]
+
+def greedy_motif_search(Dna, k, t):
+    """[selects the most attractive candidate from the profile using profile_most_probable_kmer]
+
+    Dependancies:
+        score,profile,profilemostprobablekmer
+
+    Args:
+        Dna ([string]): [reference sequence to be searched]
+        k ([int]): [determines length of kmer]
+        t ([int]): [total length parameter (range)]
+
+    Returns:
+        [list]: [A collection of strings BestMotifs]
+    """
+    bestmotifs = [string[:k]for string in Dna]
+    for j in range(len(Dna[0])-k+1):
+        motifs = [Dna[0][j:j+k]]
+        for i in range(1, t):
+            motifs += [profile_most_probable_kmer_noPR(Dna[i], k, profile(motifs))]
+        if score(motifs) < score(bestmotifs):
+            bestmotifs = motifs
+    return bestmotifs
