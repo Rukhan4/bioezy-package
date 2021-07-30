@@ -1,4 +1,4 @@
-# Bioez Package v 0.0.3
+# Bioez Package v 0.0.6
 
 ### [PyPi](https://pypi.org/project/bioezy/#description)
 
@@ -13,6 +13,6 @@
 ## Package details
 
 Contains several bioinformatics scripts automating base level genomics analysis tasks. Methods mainly runs on genomic and Dna data, 
-which are fully documented
+which are fully documented. Also contains an extensive analysis on E.Coli contained within Bacteria_Ori_Analysis 
 
 
