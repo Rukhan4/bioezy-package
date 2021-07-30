@@ -14,4 +14,3 @@
 
 -updated find_clump problem to scan_clump for faster run time, not implemented in VC analysis yet
 -made variables for various functions more readable (changed every function that had 1 letter used for a variable's name)
--added in Bacteria_Ori_Analysis 
